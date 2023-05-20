@@ -29,7 +29,7 @@ export class Database {
   //o método close é responsável por encerrar a conexão com o banco de dados
   async close(): Promise<void> {
     await this.connection.end();
-    console.log(`Conexão encerrada com o banco de dados ${this.databaseName}`);
+    console.log(`*** Conexão encerrada com o banco de dados ${this.databaseName}***`);
   }
 }
 

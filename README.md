@@ -269,7 +269,19 @@ res.send(book);
 
 # terminal mysql
 
-# terminal mysql
-
 ??? rodar o create table
 mysql -u root -p db-databases caminho-completo-para-o-arquivo/db.sql
+
+# terminal mysql: gerenciamento avançado
+
+mysql -u root -p
+Visualizando as conexões ativas:
+SHOW PROCESSLIST;
+| 10 | root | localhost:56084 | db-databases | Sleep | 2 | | NULL
+Ela retornará valores como PID (número do processo da conexão), a quantidade de conexões do seu usuário à base, a query que a conexão está rodando no momento ou se ela está ociosa (sleep).
+
+Derrubando conexões e processos presos
+KILL <numero_PID>;
+
+máximo de conexão:
+SHOW VARIABLES LIKE '%connection%';

@@ -23,6 +23,7 @@ app.get("/book-f", async function (req, res) {
   // Exemplo: Executar uma consulta
   const [rows] = await connection.query("SELECT * FROM book");
   console.log(rows);
+  //mysql -u root -p >
   // Importante: Não esqueça de fechar a conexão quando não for mais necessária
   await connection.end();
   res.send(rows);
@@ -36,7 +37,7 @@ app.get("/book-injectiondependency", async function (req, res) {
   // console.log(book);
   const listBooks = await book.getAllBooks();
   console.log(listBooks);
-  //res.send(rows);
+  res.send(listBooks);
 });
 
 //a rota /book responde a uma solicitação GET com a função de retorno assíncrona.
