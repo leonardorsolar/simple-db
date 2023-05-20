@@ -1,4 +1,19 @@
-# INICIAR:
+# O que é o Node.js e como instalá-lo?:
+
+O Node é um interpretador da linguagem JavaScript, criado a partir de um outro chamado V8.
+Caso o seu sistema operacional seja o Mac ou Windows, navegue até o endereço https://nodejs.org/en/, realize o download da versão LTS (versão mais atual e estável do Node.js) e efetue a instalação executando o arquivo baixado. Se você utiliza alguma versão do Linux, digite as seguintes linhas de comando no seu terminal:
+
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+
+nvm install lts/\*
+
+Se a instalação do Node foi concluída corretamente para qualquer um dos casos citados, ao executarmos o comando abaixo receberemos como informação no nosso terminal a versão do Node instalada:
+
+node --version
+
+# Primeiros passos:
+
+Vamos iniciar o nosso projeto criando um diretório onde haverá o arquivo package.json.
 
 npm init -y
 cria rá o package.json
@@ -20,6 +35,8 @@ configurar tsconfig.json:
 
 # diretorio src:
 
+Visando uma boa organização da aplicação, criaremos uma pasta chamada src contendo um arquivo de nome server.js.
+
 criar a pasta src > index.ts
 codígo que iniciará aplicação
 
@@ -33,7 +50,27 @@ Criará a pasta compilada do código javascript
 rodar no terminal:
 node dist/index.js
 
+# gitignore
+
+# dependencies
+
+/node_modules
+
+.env
+
+# testing
+
+/coverage
+
+# production
+
+/dist
+
+Feito isto, é hora de configurar o index.js, que utilizaremos como o arquivo principal do projeto.
+
 # SERVIDOR:
+
+Faremos as configurações básicas para “erguer” um servidor, importando e executando o Express , informando à aplicação que utilizaremos requisições e respostas no formato Json e, por fim, declarando que o servidor funcionará na porta 3000 e executará um “console.log”
 
 instalar o express:
 
@@ -46,6 +83,11 @@ import express from "express";
 
 // instanciar o express
 const app = express();
+
+// responde com "hello world" quando uma solicitação GET é feita para a página inicial
+app.get("/", function (req, res) {
+res.send("hello world");
+});
 
 app.listen(3000, () => console.log("Server on port 3000"));
 
@@ -93,6 +135,9 @@ npm run dev
 
 ## Instalar o MySQL
 
+O que é o Mysql?
+O Mysql é um sistema de gerenciamento de banco de dados que utiliza a linguagem sql, pertence à empresa Oracle e pode ser executado tanto via linha de comando no terminal (caso esteja instalado) quanto em softwares auxiliares que facilitem a interação com o mesmo.
+
 ###o mysql2
 
 npm install mysql2
@@ -104,6 +149,8 @@ isntalrt o mudlo promises:
 npm install types/mysql2
 
 ## Realizar a configuração para conexão
+
+Podemos começar a configurar a conexão com o nosso banco de dados MySQL por meio da biblioteca MySQL2. Para tal, iremos criar um arquivo específico para esta implementação chamado connection. Nele, haverá uma constante que receberá a importação de “mysql2/promise” (o uso do “promise” é necessário porque consultas a bancos de dados externos envolvem tratamentos por assincronicidade e, para utilizarmos async e await com a biblioteca, precisamos realizar a importação da forma como foi explicado).
 
 No arquivo database.ts:
 
@@ -120,6 +167,14 @@ connection.connect(function (err) {
 console.log("Conexão com o banco de dados realizado com sucesso!");
 });
 
+Note que o objeto passado como parâmetro da função createPool possui uma série de chaves necessárias para a conexão:
+
+Host - O endereço IP do MySQL: no nosso caso podemos utilizar o “localhost” ao invés do IP sem problemas, já que o mesmo se refere ao endereço local que estamos utilizando para executar o nosso servidor Node.js na porta 3003;
+Port - A porta que você escolheu para acessar o MySQL (se você instalou o MySQL utilizando as configurações padrões, a porta será a 3306);
+User - O nome do usuário que acessaremos o Mysql;
+Password - A senha que utilizaremos para acessar o Mysql;
+Database - O nome do banco de dados no qual iremos nos conectar.
+
 # Criação do banco de dados DBeaver:
 
 crie uma conexao mysql
@@ -135,7 +190,7 @@ Certifique-se de substituir 'seu_usuario', 'sua_senha' e 'seu_banco_de_dados' pe
 
 # Criação da tabela:
 
-cria a apsta sql e o arquivo sql.sql
+cria a pasta sql e o arquivo sql.sql
 
 CREATE DATABASE db-databases;
 
@@ -166,6 +221,15 @@ senha: root
 
 > show databases;
 
+# inserir na tabela
+
+INSERT INTO book (title, author, description, created_at)
+VALUES ('Exemplo de Título', 'Exemplo de Autor', 'Exemplo de Descrição', CURRENT_TIMESTAMP);
+
+Depois de configurar como deve ser feita a conexão por meio da função createPool, podemos fazer nossas primeiras interações com o Mysql.
+
+# Interagindo com o banco de dados
+
 # classe Book
 
 import { connect } from "./database";
@@ -195,52 +259,17 @@ instanciando a classe Book
 const book = new Book();
 console.log(book);
 
-# verarquivo db.ts
+# incluindo numa rota
 
-Em seguida, você pode criar um arquivo db.ts com o seguinte código:
-
-import { createConnection, Connection } from 'mysql2/promise';
-
-// Função para criar a conexão com o MySQL
-export async function createDBConnection(): Promise<Connection> {
-const connection = await createConnection({
-host: 'localhost',
-user: 'seu_usuario',
-password: 'sua_senha',
-database: 'seu_banco_de_dados',
+app.get("/book", function (req, res) {
+const book = new Book();
+console.log(book);
+res.send(book);
 });
 
-console.log('Conexão com o MySQL estabelecida com sucesso.');
+# terminal mysql
 
-return connection;
-}
+# terminal mysql
 
-Agora você pode importar e usar a função createDBConnection em seu código para obter uma conexão com o MySQL. Aqui está um exemplo de uso em um arquivo app.ts:
-
-import { createDBConnection } from './db';
-
-async function main() {
-try {
-// Cria a conexão com o MySQL
-const connection = await createDBConnection();
-
-    // Execute suas consultas e operações no banco de dados aqui...
-    // Por exemplo:
-    const [rows, fields] = await connection.execute('SELECT * FROM tabela');
-
-    console.log('Resultado da consulta:', rows);
-
-    // Feche a conexão quando terminar
-    connection.end();
-
-} catch (error) {
-console.error('Erro ao conectar ao MySQL:', error);
-}
-}
-
-// Chame a função principal
-main();
-
-Certifique-se de substituir 'seu_usuario', 'sua_senha' e 'seu_banco_de_dados' pelas informações corretas do seu banco de dados MySQL.
-
-Espero que isso ajude a estabelecer uma conexão com o MySQL usando o pacote mysql2 no TypeScript!
+??? rodar o create table
+mysql -u root -p db-databases caminho-completo-para-o-arquivo/db.sql

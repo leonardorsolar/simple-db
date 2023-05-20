@@ -1,19 +1,19 @@
-import { connect } from "./database";
-//import { minhaDatabase } from 'modulo-externo'
+//import { Database } from "./Database";
 
 export default class Book {
+  //private database: Database;
   database: any;
-  constructor() {
-    // this.database = minhaDatabase.inicia();
-    this.database = connect();
+
+  // constructor(database: Database) {
+  constructor(database: any) {
+    this.database = database;
   }
 
-  getBook() {
-    const listBook = this.database.query("select * from book");
-    console.log(listBook);
+  async getAllBooks() {
+    //const connection = await this.database.getConnection();
+    //const [rows] = await connection.query("SELECT * FROM book");
+    const query = "SELECT * FROM book";
+    const [rows] = await this.database.query(query, []);
+    return rows;
   }
-
-  // save() {
-  //   this.database.save(this);
-  // }
 }
